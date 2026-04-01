@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
-require('dotenv').config();
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import fs from 'fs';
+dotenv.config();
 
 const checkConnection = async () => {
   const uri = process.env.MONGODB_URI;
@@ -31,7 +33,7 @@ const checkConnection = async () => {
     } else if (error.message.includes('IP address') || error.message.includes('not whitelisted')) {
       console.error('💡 Hint: Your IP might not be whitelisted on MongoDB Atlas.');
     }
-    
+    fs.writeFileSync('error_log.txt', error.stack, 'utf8');
     process.exit(1);
   }
 };

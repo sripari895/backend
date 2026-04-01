@@ -1,64 +1,75 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
-const CATEGORY_ENUM = ['Delay', 'Damage', 'Billing', 'Other'];
-const STATUS_ENUM = ['Open', 'In-Progress', 'Resolved'];
+const STATUS_ENUM = ['Open', 'In-Progress', 'Resolved', 'Closed'];
+
+const replySchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    message: {
+      type: String,
+      required: [true, 'Reply message is required'],
+      trim: true,
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
 
 const supportTicketSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: [true, 'User is required'],
     },
+
     subject: {
       type: String,
       required: [true, 'Subject is required'],
       trim: true,
     },
+
     category: {
       type: String,
-      enum: CATEGORY_ENUM,
-      required: [true, 'Category is required'],
+      enum: ['Delivery Issue', 'Payment', 'Tracking', 'Other'],
+      default: 'Other',
     },
+
     trackingId: {
       type: String,
       trim: true,
+      default: null,
     },
+
     message: {
       type: String,
       required: [true, 'Message is required'],
+      trim: true,
     },
+
     status: {
       type: String,
-      enum: STATUS_ENUM,
+      enum: {
+        values: STATUS_ENUM,
+        message: 'Invalid ticket status',
+      },
       default: 'Open',
     },
-    replies: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-          required: true,
-        },
-        message: {
-          type: String,
-          required: true,
-        },
-        isAdmin: {
-          type: Boolean,
-          default: false,
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
+
+    replies: [replySchema],
   },
   { timestamps: true }
 );
 
+// 📊 Expose status enum
 supportTicketSchema.statics.STATUS_ENUM = STATUS_ENUM;
-supportTicketSchema.statics.CATEGORY_ENUM = CATEGORY_ENUM;
 
-export default mongoose.model('SupportTicket', supportTicketSchema);
+// ✅ Safe export
+module.exports = mongoose.models.SupportTicket || mongoose.model('SupportTicket', supportTicketSchema);

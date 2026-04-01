@@ -1,13 +1,13 @@
-import express from 'express';
-import { protect, authorize, adminOnly } from '../middleware/auth.js';
-import {
+const express = require('express');
+const { protect, authorize, adminOnly } = require('../middleware/auth');
+const {
   createShipment,
   getShipments,
   getStats,
   trackShipment,
   updateStatus,
   deleteShipment,
-} from '../controllers/shipmentController.js';
+} = require('../controllers/shipmentController');
 
 const router = express.Router();
 
@@ -18,4 +18,4 @@ router.get('/:trackingId', trackShipment);
 router.patch('/:id/status', protect, adminOnly, updateStatus);
 router.delete('/:id', protect, adminOnly, deleteShipment);
 
-export default router;
+module.exports = router;

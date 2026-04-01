@@ -1,7 +1,7 @@
 {
   "name": "swiftship-backend",
   "version": "2.0.0",
-  "type": "module",
+  "type": "commonjs",
   "description": "SwiftShip Logistics – Enterprise Backend API",
   "main": "server.js",
   "scripts": {

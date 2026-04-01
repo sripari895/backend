@@ -1,12 +1,12 @@
-import express from 'express';
-import { protect, adminOnly } from '../middleware/auth.js';
-import {
+const express = require('express');
+const { protect, adminOnly } = require('../middleware/auth');
+const {
   createTicket,
   getMyTickets,
   getAllTickets,
   updateTicketStatus,
   replyToTicket,
-} from '../controllers/supportController.js';
+} = require('../controllers/supportController');
 
 const router = express.Router();
 
@@ -16,4 +16,4 @@ router.get('/all', protect, adminOnly, getAllTickets);
 router.patch('/:id/status', protect, adminOnly, updateTicketStatus);
 router.post('/:id/reply', protect, replyToTicket);
 
-export default router;
+module.exports = router;

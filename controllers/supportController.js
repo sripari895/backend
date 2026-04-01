@@ -1,7 +1,7 @@
-import SupportTicket from '../models/SupportTicket.js';
+const SupportTicket = require('../models/SupportTicket');
 
 // POST /api/support — create a new ticket (logged-in user)
-export const createTicket = async (req, res, next) => {
+const createTicket = async (req, res, next) => {
   try {
     const { subject, category, trackingId, message } = req.body;
 
@@ -26,7 +26,7 @@ export const createTicket = async (req, res, next) => {
 };
 
 // GET /api/support/my — user sees own tickets
-export const getMyTickets = async (req, res, next) => {
+const getMyTickets = async (req, res, next) => {
   try {
     const tickets = await SupportTicket.find({ userId: req.user._id }).sort({ createdAt: -1 });
     res.json({ success: true, count: tickets.length, data: tickets });
@@ -36,7 +36,7 @@ export const getMyTickets = async (req, res, next) => {
 };
 
 // GET /api/support/all — admin sees all tickets
-export const getAllTickets = async (req, res, next) => {
+const getAllTickets = async (req, res, next) => {
   try {
     const tickets = await SupportTicket.find()
       .populate('userId', 'name email')
@@ -48,7 +48,7 @@ export const getAllTickets = async (req, res, next) => {
 };
 
 // PATCH /api/support/:id/status — admin updates ticket status
-export const updateTicketStatus = async (req, res, next) => {
+const updateTicketStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
     if (!SupportTicket.STATUS_ENUM.includes(status)) {
@@ -75,7 +75,7 @@ export const updateTicketStatus = async (req, res, next) => {
 };
 
 // POST /api/support/:id/reply — admin or ticket owner adds a reply
-export const replyToTicket = async (req, res, next) => {
+const replyToTicket = async (req, res, next) => {
   try {
     const { message } = req.body;
     const ticket = await SupportTicket.findById(req.params.id);
@@ -104,4 +104,12 @@ export const replyToTicket = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+module.exports = {
+  createTicket,
+  getMyTickets,
+  getAllTickets,
+  updateTicketStatus,
+  replyToTicket,
 };
