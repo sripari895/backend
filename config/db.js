@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'; // 1. Changed from require()
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
@@ -61,9 +61,8 @@ const connectDB = async () => {
       console.error('💡 Hint: Check IP whitelist in MongoDB Atlas (0.0.0.0/0)');
     }
 
-    // ❗ Do NOT crash server (good for dev)
-    // process.exit(1);
+    // process.exit(1); // optional
   }
 };
 
-export default connectDB; // 2. Changed from module.exports
+module.exports = connectDB;

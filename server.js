@@ -1,11 +1,18 @@
-import express from 'express';
-import cors from 'cors';
-import 'dotenv/config';
-import connectDB from './config/db.js';
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+const connectDB = require('./config/db');
 
-import authRoutes from './routes/authRoutes.js';
-import shipmentRoutes from './routes/shipmentRoutes.js';
-import supportRoutes from './routes/supportRoutes.js';
+const authRoutes = require('./routes/authRoutes');
+const shipmentRoutes = require('./routes/shipmentRoutes');
+const supportRoutes = require('./routes/supportRoutes');
+
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT:', err);
+});
+process.on('unhandledRejection', (err) => {
+  console.error('UNHANDLED:', err);
+});
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -53,18 +60,15 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   console.error('❌ Unhandled Error:', err.message);
 
-  // Mongoose validation errors
   if (err.name === 'ValidationError') {
     const messages = Object.values(err.errors).map((e) => e.message);
     return res.status(400).json({ success: false, message: messages.join(', ') });
   }
 
-  // Mongoose duplicate key error
   if (err.code === 11000) {
     return res.status(400).json({ success: false, message: 'Duplicate field value entered' });
   }
 
-  // Mongoose bad ObjectId
   if (err.name === 'CastError') {
     return res.status(400).json({ success: false, message: `Invalid ${err.path}: ${err.value}` });
   }

@@ -31,22 +31,15 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// 🔐 Hash password before saving (Modern async version without 'next')
+userSchema.pre('save', async function () {
+  // If password hasn't been modified, exit the function
+  if (!this.isModified('password')) return;
 
-// 🔐 Hash password before saving
-userSchema.pre('save', async function (next) {
-  try {
-    if (!this.isModified('password')) return next();
-
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-
-    next();
-  } catch (error) {
-    console.error('❌ Error hashing password:', error.message);
-    next(error);
-  }
+  // Hash the password
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
-
 
 // 🔑 Compare password (for login)
 userSchema.methods.matchPassword = async function (enteredPassword) {
@@ -62,7 +55,6 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   }
 };
 
-
 // 🚫 Prevent duplicate email crash (clean error)
 userSchema.post('save', function (error, doc, next) {
   if (error.code === 11000) {
@@ -71,7 +63,6 @@ userSchema.post('save', function (error, doc, next) {
     next(error);
   }
 });
-
 
 // 📦 Export model
 module.exports = mongoose.model('User', userSchema);
