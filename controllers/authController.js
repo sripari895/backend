@@ -16,15 +16,35 @@ const generateToken = (user) => {
 };
 
 
+// ✅ Validation helpers
+const EMAIL_RE = /^\S+@\S+\.\S+$/;
+const PHONE_RE = /^[+]?[\d\s\-().]{7,15}$/;
+
+function validateRegister(name, email, phone, password) {
+  const errors = [];
+  if (!name || name.trim().length < 2)
+    errors.push('Name must be at least 2 characters');
+  if (!email || !EMAIL_RE.test(email))
+    errors.push('Please enter a valid email address');
+  if (phone && !PHONE_RE.test(phone))
+    errors.push('Please enter a valid phone number (7–15 digits)');
+  if (!password || password.length < 6)
+    errors.push('Password must be at least 6 characters');
+  return errors;
+}
+
+
 // 📌 POST /api/auth/register
 const register = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, phone, password } = req.body;
 
-    if (!name || !email || !password) {
+    // ✅ Server-side validation
+    const errors = validateRegister(name, email, phone, password);
+    if (errors.length > 0) {
       return res.status(400).json({
         success: false,
-        message: 'Name, email, and password are required',
+        message: errors.join('. '),
       });
     }
 
@@ -37,7 +57,12 @@ const register = async (req, res, next) => {
       });
     }
 
-    const user = await User.create({ name, email, password });
+    const user = await User.create({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone ? phone.trim() : null,
+      password,
+    });
 
     const token = generateToken(user);
 
@@ -50,6 +75,7 @@ const register = async (req, res, next) => {
           _id: user._id,
           name: user.name,
           email: user.email,
+          phone: user.phone,
           role: user.role,
         },
       },
@@ -102,6 +128,7 @@ const login = async (req, res, next) => {
           _id: user._id,
           name: user.name,
           email: user.email,
+          phone: user.phone,
           role: user.role,
         },
       },
@@ -130,6 +157,7 @@ const getMe = async (req, res, next) => {
         _id: req.user._id,
         name: req.user.name,
         email: req.user.email,
+        phone: req.user.phone,
         role: req.user.role,
       },
     });
