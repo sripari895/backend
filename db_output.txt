@@ -1,0 +1,5 @@
+📡 Attempting to connect to MongoDB...
+🔗 URI: mongodb+srv:****@cluster0.ijmjvft.mongodb.net/
+❌ Connection Failed!
+📝 Error Message: querySrv ECONNREFUSED _mongodb._tcp.cluster0.ijmjvft.mongodb.net
+💡 Hint: Is your local MongoDB server running or is there a firewall issue?
