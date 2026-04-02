@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Name is required'],
       trim: true,
+      minlength: [2, 'Name must be at least 2 characters'],
     },
     email: {
       type: String,
@@ -14,7 +15,13 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'],
+      match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address'],
+    },
+    phone: {
+      type: String,
+      trim: true,
+      match: [/^[+]?[\d\s\-().]{7,15}$/, 'Please enter a valid phone number (7–15 digits)'],
+      default: null,
     },
     password: {
       type: String,
