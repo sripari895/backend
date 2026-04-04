@@ -127,18 +127,6 @@ shipmentSchema.pre('save', function (next) {
 });
 
 
-// 🚫 Handle duplicate trackingId cleanly
-shipmentSchema.post('save', function (error, doc, next) {
-  if (error.code === 11000) {
-    next(new Error('Tracking ID already exists. Try again.'));
-  } else if (error.name === 'ValidationError') {
-    next(new Error(error.message));
-  } else {
-    next(error);
-  }
-});
-
-
 // 📊 Expose helpers
 shipmentSchema.statics.STATUS_ENUM = STATUS_ENUM;
 shipmentSchema.statics.calculatePrice = calculatePrice;
